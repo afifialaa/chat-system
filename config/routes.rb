@@ -2,6 +2,10 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 
   # User routes
+  post '/user/login', to: 'sessions#login'
+  delete '/user/logout', to: 'sessions#destroy'
+  get '/user/search', to: 'sessions#show'
+
   post '/user/create', to: 'users#create'
   delete '/user/delete/:email', to: 'users#delete'
 
