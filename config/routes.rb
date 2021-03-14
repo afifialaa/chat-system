@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   get '/user/search', to: 'sessions#show'
 
   post '/user/create', to: 'users#create'
-  delete '/user/delete/:email', to: 'users#delete'
+  delete '/user/delete', to: 'users#delete'
 
   # Application routes
   post '/application/create', to: 'applications#create'
@@ -19,8 +19,11 @@ Rails.application.routes.draw do
   get '/applications/:token/chats/search/:num', to: 'chats#show'
   delete '/applications/:token/chats/delete/:num', to: 'chats#delete'
 
+  post '/applications/:token/chats/:num/join', to: 'chats#join'
+  delete '/applications/:token/chats/:num/exit', to: 'chats#exit'
+
   # Messages routes
-  post '/application/:token/chats/:num/message/create', to: 'messages#create'
-  get '/application/:token/chats/:num/message/search/:query', to: 'messages#search'
+  post '/application/:token/chats/:num/message', to: 'messages#create'
   delete '/application/:token/chats/:num/message/delete/:message_id', to: 'messages#delete'
+  get '/application/:token/chats/:num/message/search/:query', to: 'messages#search'
 end
