@@ -10,9 +10,10 @@ Rails.application.routes.draw do
   delete '/user/delete', to: 'users#delete'
 
   # Application routes
-  post '/application/create', to: 'applications#create'
-  delete '/application/delete/:token', to: 'applications#delete'
-  put '/application/update/:token/:name', to: 'applications#update'
+  post '/application/create', to: 'applications#create' # create new application
+  delete '/application/:token/delete', to: 'applications#delete' # delete application
+  put '/application/:token/:name', to: 'applications#update' # rename application
+  get '/applications/:token', to: 'applications#show' # find application and all its chats
 
   # Chat routes
   post '/applications/:token/chats/create', to: 'chats#create'

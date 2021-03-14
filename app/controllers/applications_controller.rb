@@ -37,6 +37,13 @@ class ApplicationsController < ApplicationController
         end
     end
 
+    # Find application -> returns chats
+    def show
+        @application = Application.find_by(token: params[:token])
+        @chats = Chat.select("num").where(application_id: @application::id).as_json(:except => :id)
+        render(json: {chats: @chats}, status: :ok)
+    end
+
     private
     def generate_application_token
         SecureRandom.hex(10)
