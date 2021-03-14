@@ -4,10 +4,8 @@ class MessagesController < ApplicationController
 
     def create
         @application = Application.find_by(token: params[:token])
-        puts @application::token
-        @chat = Chat.find_by(num: params[:num], application_id: @application::id)
-        puts @chat::id
-        @message = Message.new(body: params[:body], num: params[:num], chat_id: @chat::id)
+        @chat = Chat.find_by(application_id: @application::id, num: params[:num])
+        @message = Message.new(body: params[:body], num: 6, chat_id: @chat::id, user_id: session[:user_email])
 
         if @message.save
             render(json: { num: @message::id}, status: :ok)

@@ -28,14 +28,16 @@ class ChatsController < ApplicationController
     # Returns chat
     def show
         @application = Application.find_by(token: params[:token])
-        @chat = Chat.where(num: params[:num], application_id: @application::id)
-        render(json: { chat: @chat }, status: :ok)
+        @chat = Chat.find_by(application_id: @application::id, num: params[:num])
+        @messages = Message.select('body').where(chat_id: @chat::id).as_json(:except => :id)
+        render(json: { messages: @messages }, status: :ok)
     end
 
     # User joins chat
     def join
         @user = User.find_by(email: session[:user_email])
-        @chat = Chat.find_by(num: params[:num])
+        @application = Application.select("id").where(token: params[:token])
+        @chat = Chat.find_by(application_id: @application::id, num: params[:num])
 
         @userchat = Userschat.new(user_id: @user::id, chat_id: @chat::id)
         if @userchat.save
