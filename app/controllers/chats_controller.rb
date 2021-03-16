@@ -7,7 +7,7 @@ class ChatsController < ApplicationController
         @application = Application.find_by(token: params[:token])
         @chat = Chat.new(num: params[:num], application_id: @application::id)
         if @chat.save
-            results = ActiveRecord::Base.connection.execute("update applications set chats_count = (select count (*) from chats where chats.application_id = application.id)")
+            Application.update_chats_count(@application::id)
             render(json: { num: @chat::num}, status: :created)
         else
             render(json: {error: @chat.errors}, status: :unprocessable_entity)
@@ -19,6 +19,7 @@ class ChatsController < ApplicationController
         @application = Application.find_by(token: params[:token])
         @chat = Chat.find_by(num: params[:num], application_id: @application::id)
         if @chat.destroy
+            Application.update_chats_count(@application::id)
             render(json: { message: "Chat was deleted successfully" }, stauts: :ok)
         else
             render(json: { error: @chat.errors }, stauts: :not_modified)

@@ -31,13 +31,12 @@ class ApplicationsController < ApplicationController
         @application.name = params[:name]
         if @application.save
             render(json: { message: "Application was renamed successfully" }, status: :ok)
-            # Return application token
         else
-            render(json: { error: @application.errors}, status: :unprocessable_entity)
+            render(json: { error: @application.errors}, status: :not_modified)
         end
     end
 
-    # Find application -> returns chats
+    # Find application -> returns chats in application
     def show
         @application = Application.find_by(token: params[:token])
         @chats = Chat.select("num").where(application_id: @application::id).as_json(:except => :id)

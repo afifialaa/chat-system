@@ -1,0 +1,4 @@
+:schedule:
+  hello_world:
+    every: '50m'
+    class: UpdateChatsCountWorker

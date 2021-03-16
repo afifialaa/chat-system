@@ -25,4 +25,6 @@ Rails.application.routes.draw do
   post '/application/:token/chats/:num/message', to: 'messages#create'
   delete '/application/:token/chats/:num/message/delete/:message_id', to: 'messages#delete'
   get '/application/:token/chats/:num/message/search/:query', to: 'messages#search'
+
+  get '/applications/test/test', to: 'applications#test'
 end
