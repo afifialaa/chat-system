@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
 
+  # Serve websocket cable requests in-process
+  mount ActionCable.server => '/cable'
+
   # User routes
   post '/user/login', to: 'sessions#login'
   delete '/user/logout', to: 'sessions#destroy'
@@ -22,7 +25,7 @@ Rails.application.routes.draw do
   delete '/applications/:token/chats/:num/exit', to: 'chats#exit' # User exits chats
 
   # Messages routes
-  post '/application/:token/chats/:num/message', to: 'messages#create'
+  post '/application/:token/chats/:chat_num/message', to: 'messages#create'
   delete '/application/:token/chats/:num/message/delete/:message_id', to: 'messages#delete'
   get '/application/:token/chats/:num/message/search/:query', to: 'messages#search'
 

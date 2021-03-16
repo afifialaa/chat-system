@@ -4,10 +4,17 @@ class MessagesController < ApplicationController
 
     def create
         @application = Application.find_by(token: params[:token])
-        @chat = Chat.find_by(application_id: @application::id, num: params[:num])
-        @message = Message.new(body: params[:body], num: 6, chat_id: @chat::id, user_id: session[:user_email])
+        @chat = Chat.find_by(application_id: @application::id, num: params[:chat_num])
+        @user = User.find_by(email: session[:user_email])
+        @message = Message.new(body: params[:body], num: params[:msg_num], chat_id: @chat::id, user_id: @user::id)
 
         if @message.save
+
+            ActionCable.server.broadcast 'messages',
+                body: @message::body,
+                user: @message::user_id
+                head :ok
+
             render(json: { num: @message::id}, status: :ok)
         else
             render(json: { error: @message.errors}, status: :unprocessable_entity)

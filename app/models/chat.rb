@@ -1,6 +1,6 @@
 class Chat < ApplicationRecord
     belongs_to :application
-    has_many :messages
+    has_many :messages, dependent: :destroy
 
     validates :num, presence: true, uniqueness: true
     validates :application_id, presence: true
