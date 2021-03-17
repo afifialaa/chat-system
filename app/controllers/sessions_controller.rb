@@ -9,7 +9,7 @@ class SessionsController < ApplicationController
     def login
         @user = User.find_by(email:params[:email])
         if @user && @user.authenticate(params[:password])
-            session[:user_email] = @user::email
+            session[:user_id] = @user::id
             render(json: { message: "User logged in successfully"}, status: :ok)
         else
             render(json: { message: "Wrong email or password"}, status: :unauthorized)

@@ -4,10 +4,12 @@ class ChatsController < ApplicationController
 
     # Create new chat
     def create
-        @application = Application.find_by(token: params[:token])
-        @chat = Chat.new(num: params[:num], application_id: @application::id)
+        @user = current_user
+        @application = Application.find_by(token: params[:token], user_id: @user::id)
+        @chat = Chat.new(application_id: @application::id)
         if @chat.save
-            Application.update_chats_count(@application::id)
+            Application.increment_counter(:chats_count, @application::id)
+            Chat.increment_counter(:num, @application::id)
             render(json: { num: @chat::num}, status: :created)
         else
             render(json: {error: @chat.errors}, status: :unprocessable_entity)
@@ -16,10 +18,11 @@ class ChatsController < ApplicationController
 
     # Delete chat
     def delete
-        @application = Application.find_by(token: params[:token])
+        @user = current_user
+        @application = Application.find_by(token: params[:token], user_id: @user::id)
         @chat = Chat.find_by(num: params[:num], application_id: @application::id)
         if @chat.destroy
-            Application.update_chats_count(@application::id)
+            Application.decrement_count(:chats_count, @application::id)
             render(json: { message: "Chat was deleted successfully" }, stauts: :ok)
         else
             render(json: { error: @chat.errors }, stauts: :not_modified)
@@ -28,7 +31,8 @@ class ChatsController < ApplicationController
 
     # Returns chat
     def show
-        @application = Application.find_by(token: params[:token])
+        @user = current_user
+        @application = Application.find_by(token: params[:token], user_id: @user::id)
         @chat = Chat.find_by(application_id: @application::id, num: params[:num])
         @messages = Message.select('body').where(chat_id: @chat::id).as_json(:except => :id)
         render(json: { messages: @messages }, status: :ok)
@@ -36,7 +40,7 @@ class ChatsController < ApplicationController
 
     # User joins chat
     def join
-        @user = User.find_by(email: session[:user_email])
+        @user = current_user
         @application = Application.select("id").where(token: params[:token])
         @chat = Chat.find_by(application_id: @application::id, num: params[:num])
 
@@ -50,8 +54,9 @@ class ChatsController < ApplicationController
 
     # User exits chat
     def exit
-        @user = User.find_by(email: session[:user_email])
-        @chat = Chat.find_by(num: params[:num])
+        @user = current_user
+        @application = Application.find_by(token: params[:token], user_id: @user::id)
+        @chat = Chat.find_by(num: params[:num], application_id: @application_id)
         @userchat = Userschat.find_by(user_id: @user::id, chat_id: @chat::id)
         if @userchat.destroy
             render(json: {message: "User exited chat"}, status: :ok)

@@ -5,10 +5,11 @@ class ApplicationsController < ApplicationController
 
     # Create new application
     def create
-        @user = User.find_by(email: "afifi@gmail.com")
+        @user = current_user
         token = generate_application_token
         @application = Application.new(token: token, name: params[:name], user_id: @user::id)
         if @application.save
+            session[:user_id] = @user::id
             render(json: { token: @application::token }, status: :created)
         else
             render(json: {errors: @application.errors}, status: :unprocessable_entity)
@@ -17,7 +18,8 @@ class ApplicationsController < ApplicationController
 
     # Delete application
     def delete
-        @application = Application.find_by(token: params[:token])
+        @user = current_user
+        @application = Application.find_by(token: params[:token], user_id:@user::id)
         if @application.destroy
             render(json: { message: "Application was deleted successfully" }, status: :ok)
         else
@@ -27,7 +29,8 @@ class ApplicationsController < ApplicationController
 
     # Rename application
     def update
-        @application = Application.find_by(token: params[:token])
+        @user = current_user
+        @application = Application.find_by(token: params[:token], user_id:@user::id)
         @application.name = params[:name]
         if @application.save
             render(json: { message: "Application was renamed successfully" }, status: :ok)

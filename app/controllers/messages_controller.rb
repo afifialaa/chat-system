@@ -9,12 +9,7 @@ class MessagesController < ApplicationController
         @message = Message.new(body: params[:body], num: params[:msg_num], chat_id: @chat::id, user_id: @user::id)
 
         if @message.save
-
-            ActionCable.server.broadcast 'messages',
-                body: @message::body,
-                user: @message::user_id
-                head :ok
-
+            Chat.increment_counter(:messages_count, @chat::id)
             render(json: { num: @message::id}, status: :ok)
         else
             render(json: { error: @message.errors}, status: :unprocessable_entity)
@@ -37,6 +32,7 @@ class MessagesController < ApplicationController
         @chat = Chat.find_by(num: params[:num], application_id: @application::id)
         @message = Message.find_by(num: params[:num], chat_id: @chat::id)
         if @message.destroy
+            Chat.increment_counter(:messages_count, @chat::id)
             render(json: { message: "Message was deleted successfully"}, status: :ok)
         else
             render(json: { error: @message.errors}, status: :not_modified)
