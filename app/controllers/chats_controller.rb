@@ -8,9 +8,10 @@ class ChatsController < ApplicationController
         @application = Application.find_by(token: params[:token], user_id: @user::id)
         @chat = Chat.new(application_id: @application::id)
         if @chat.save
-            Application.increment_counter(:chats_count, @application::id)
-            Chat.increment_counter(:num, @application::id)
-            render(json: { num: @chat::num}, status: :created)
+            sql = "SELECT MAX(num) FROM chats WHERE application_id = #{@application::id}"
+            res = ActiveRecord::Base.connection.execute(sql).as_json
+            ans = res[0] + 1
+            render(json: res[0], status: :created)
         else
             render(json: {error: @chat.errors}, status: :unprocessable_entity)
         end
@@ -22,7 +23,6 @@ class ChatsController < ApplicationController
         @application = Application.find_by(token: params[:token], user_id: @user::id)
         @chat = Chat.find_by(num: params[:num], application_id: @application::id)
         if @chat.destroy
-            Application.decrement_count(:chats_count, @application::id)
             render(json: { message: "Chat was deleted successfully" }, stauts: :ok)
         else
             render(json: { error: @chat.errors }, stauts: :not_modified)

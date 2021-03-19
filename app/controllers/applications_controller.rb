@@ -2,6 +2,7 @@ class ApplicationsController < ApplicationController
 
     # skip CRSF token authentication
     skip_before_action :verify_authenticity_token
+    
 
     # Create new application
     def create

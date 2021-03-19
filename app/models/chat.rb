@@ -1,12 +1,15 @@
 class Chat < ApplicationRecord
-    belongs_to :application
-    has_many :messages, dependent: :destroy
+    belongs_to :application, :counter_cache => :chats_count
 
-    validates :num, presence: true, uniqueness: true
+    has_many :messages, dependent: :destroy
     validates :application_id, presence: true
 
-    def self.count_messages_count(chat_id)
-        UpdateMessagesCountWorker.perform_async('updateMessages', chat_id)
-        UpdateMessagesCountWorker.perform_in('updateMessages', chat_id)
+    # before_save :increment_num
+
+    def increment_num
+        sql = "SELECT MAX(num) FROM chats WHERE application_id = #{@application::id}"
+        res = ActiveRecord::Base.connection.execute(sql).as_json
+        self.num = res[0] + 1
     end
+
 end

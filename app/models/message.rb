@@ -1,4 +1,5 @@
 class Message < ApplicationRecord
+    belongs_to :chats, :counter_cache => :messages_count
 
     validates :body, presence: true
     validates :num, presence: true, uniqueness: true
