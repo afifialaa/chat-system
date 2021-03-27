@@ -4,6 +4,7 @@ class CreateApplications < ActiveRecord::Migration[6.1]
       t.string :token, null: false, index: {unique: true}
       t.string :name
       t.integer :chats_count
+      t.belongs_to :user
 
       t.timestamps
     end

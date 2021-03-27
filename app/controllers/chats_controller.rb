@@ -6,12 +6,12 @@ class ChatsController < ApplicationController
     def create
         @user = current_user
         @application = Application.find_by(token: params[:token], user_id: @user::id)
-        @chat = Chat.new(application_id: @application::id)
+        @chat = Chat.new(application_id: @application::id, num: 0)
+        sql = "SELECT MAX(num) FROM chats WHERE application_id = #{@application::id}"
+        res = ActiveRecord::Base.connection.execute(sql).as_json
+        @chat::num = res[0][0] + 1
         if @chat.save
-            sql = "SELECT MAX(num) FROM chats WHERE application_id = #{@application::id}"
-            res = ActiveRecord::Base.connection.execute(sql).as_json
-            ans = res[0] + 1
-            render(json: res[0], status: :created)
+            render(json: {message: @chat.num}, status: :created)
         else
             render(json: {error: @chat.errors}, status: :unprocessable_entity)
         end

@@ -8,7 +8,7 @@ Rails.application.routes.draw do
   delete '/user/logout', to: 'sessions#destroy'
 
   post '/user/create', to: 'users#create'
-  delete '/user/delete', to: 'users#delete'
+  delete '/user/', to: 'users#delete'
 
   # Application routes
   post '/applications', to: 'applications#create' # Create new application
